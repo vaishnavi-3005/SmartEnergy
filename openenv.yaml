@@ -1,0 +1,19 @@
+name: smart-energy-env
+version: 1.0
+
+entry_point: smart_env.py
+
+actions:
+  - turn_on_ac
+  - turn_off_ac
+  - turn_on_lights
+  - turn_off_lights
+  - turn_on_fan
+  - turn_off_fan
+
+observation_space:
+  type: dict
+
+reward_range:
+  min: -20
+  max: 10
