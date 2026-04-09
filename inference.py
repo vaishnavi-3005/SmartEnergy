@@ -28,10 +28,23 @@ def log_end(success, steps, score, rewards):
 
 def smart_policy(state):
 
-    if "occupancy': 0" in state:
-        return "turn_off_ac"
+    # Convert string to dictionary
+    state_dict = eval(state)
 
-    return "turn_on_ac"
+    occupancy = state_dict["occupancy"]
+    temp = state_dict["temperature"]
+
+    # Smarter decisions
+    if occupancy == 0:
+        return "turn_off_ac"
+    
+    if temp > 30:
+        return "turn_on_ac"
+    
+    if temp < 26:
+        return "turn_off_ac"
+    
+    return "turn_on_fan"
 
 
 def main():
@@ -67,3 +80,53 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# inference.py
+
+def run_simulation(steps: int): 
+    """
+    Runs the Smart Energy Simulation for a given number of steps.
+
+    Args:
+        steps (int): Maximum number of steps to run the simulation.
+
+    Returns:
+        dict: Dictionary containing steps, score, success, average reward, logs, and rewards list.
+    """
+    env = SmartEnv()
+    rewards = []
+    logs = []
+
+    logs.append("[START] Smart Energy Simulation\n")
+
+    state = env.reset()
+
+    for step in range(1, steps + 1):  # use user-defined steps
+        action = smart_policy(state)
+        state, reward, done = env.step(action)
+
+        rewards.append(reward)
+
+        log_line = f"[STEP] step={step} action={action} reward={reward:.2f} done={str(done).lower()}"
+        logs.append(log_line)
+
+        if done:
+            break
+
+    # Score calculation
+    score = min(max(sum(rewards)/50, 0), 1)
+    success = score > 0.3
+
+    logs.append(f"\n[END] success={str(success).lower()} steps={step} score={score:.2f}")
+
+    env.close()
+
+    return {
+        "steps": step,
+        "score": round(score, 2),
+        "success": success,
+        "avg_reward": round(sum(rewards)/len(rewards), 2),
+        "logs": "\n".join(logs),
+        "rewards": rewards
+    }
