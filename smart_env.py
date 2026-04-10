@@ -15,7 +15,7 @@ class SmartEnv:
             "fan": random.randint(0, 1)
         }
         self.steps = 0
-        return str(self.state)
+        return self.state
 
     def step(self, action):
 
@@ -54,7 +54,7 @@ class SmartEnv:
         self.steps += 1
         done = self.steps >= 10
 
-        return str(self.state), reward, done
+        return self.state, reward, done
 
     def close(self):
         pass
