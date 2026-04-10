@@ -9,29 +9,18 @@ env = SmartEnv()
 class ActionRequest(BaseModel):
     action: str
 
-
-# ✅ RESET
 @app.post("/reset")
 def reset():
-    state = env.reset()
     return {
-        "observation": str(state)   # ✅ FIXED
+        "observation": env.reset()
     }
 
-
-# ✅ STEP
 @app.post("/step")
 def step(request: ActionRequest):
     state, reward, done = env.step(request.action)
     return {
-        "observation": str(state),  # ✅ FIXED
-        "reward": float(reward),
-        "done": bool(done),
-        "info": {}                 # ✅ VERY IMPORTANT
+        "observation": state,
+        "reward": reward,
+        "done": done,
+        "info": {}
     }
-
-
-# Optional
-@app.get("/")
-def home():
-    return {"message": "API running"}
