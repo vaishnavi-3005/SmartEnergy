@@ -10,9 +10,7 @@ class ActionRequest(BaseModel):
 
 @app.post("/reset")
 def reset():
-    return {
-        "observation": env.reset()
-    }
+    return {"observation": env.reset()}
 
 @app.post("/step")
 def step(request: ActionRequest):
@@ -23,3 +21,8 @@ def step(request: ActionRequest):
         "done": done,
         "info": {}
     }
+
+# ✅ FIXED ROOT
+@app.api_route("/", methods=["GET", "POST"])
+def root():
+    return {"message": "API running"}
