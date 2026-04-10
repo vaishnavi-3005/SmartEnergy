@@ -6,22 +6,23 @@ app = FastAPI()
 
 env = SmartEnv()
 
-# Define request model (IMPORTANT)
-class ActionRequest(BaseModel):
+# ✅ EXACT request schema
+class StepRequest(BaseModel):
     action: str
 
 
 @app.post("/reset")
 def reset():
     state = env.reset()
-    return {"state": state}
+    return {"observation": state}   # ⚠️ IMPORTANT KEY NAME
 
 
 @app.post("/step")
-def step(req: ActionRequest):
+def step(req: StepRequest):
     state, reward, done = env.step(req.action)
     return {
-        "state": state,
+        "observation": state,   # ⚠️ NOT "state"
         "reward": reward,
-        "done": done
+        "done": done,
+        "info": {}              # ⚠️ MUST INCLUDE
     }
