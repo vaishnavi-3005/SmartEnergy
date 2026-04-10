@@ -6,19 +6,32 @@ app = FastAPI()
 
 env = SmartEnv()
 
-class StepRequest(BaseModel):
+class ActionRequest(BaseModel):
     action: str
 
+
+# ✅ RESET
 @app.post("/reset")
 def reset():
-    return {"observation": env.reset()}
-
-@app.post("/step")
-def step(req: StepRequest):
-    state, reward, done = env.step(req.action)
+    state = env.reset()
     return {
-        "observation": state,
-        "reward": reward,
-        "done": done,
-        "info": {}
+        "observation": str(state)   # ✅ FIXED
     }
+
+
+# ✅ STEP
+@app.post("/step")
+def step(request: ActionRequest):
+    state, reward, done = env.step(request.action)
+    return {
+        "observation": str(state),  # ✅ FIXED
+        "reward": float(reward),
+        "done": bool(done),
+        "info": {}                 # ✅ VERY IMPORTANT
+    }
+
+
+# Optional
+@app.get("/")
+def home():
+    return {"message": "API running"}
