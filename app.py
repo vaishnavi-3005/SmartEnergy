@@ -3,7 +3,6 @@ from pydantic import BaseModel
 from smart_env import SmartEnv
 
 app = FastAPI()
-
 env = SmartEnv()
 
 class ActionRequest(BaseModel):
