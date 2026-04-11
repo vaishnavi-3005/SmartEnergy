@@ -7,7 +7,7 @@ import requests
 # -------------------------
 HF_TOKEN = os.getenv("HF_TOKEN")
 API_URL = "https://router.huggingface.co/v1/chat/completions"
-MODEL_NAME = os.getenv("MODEL_NAME", "mistralai/Mistral-7B-Instruct")
+MODEL_NAME = "HuggingFaceH4/zephyr-7b-beta"
 
 if not HF_TOKEN:
     raise ValueError("HF_TOKEN is missing. Set it using environment variable.")
@@ -40,14 +40,23 @@ def run_task(task_name, prompt):
     }
 
     try:
-        response = requests.post(API_URL, headers=headers, json=payload)
-        data = response.json()
+       response = requests.post(API_URL, headers=headers, json=payload)
+data = response.json()
 
-        # extract output safely
-        output = data["choices"][0]["message"]["content"]
+# -------------------------
+# SAFE OUTPUT EXTRACTION
+# -------------------------
+if "choices" in data:
+    output = data["choices"][0]["message"]["content"]
 
-    except Exception as e:
-        output = f"ERROR: {str(e)}"
+elif "generated_text" in data:
+    output = data["generated_text"]
+
+elif "error" in data:
+    output = f"API_ERROR: {data['error']}"
+
+else:
+    output = f"UNKNOWN_RESPONSE: {data}"
 
     log("STEP", f"Prompt: {prompt}")
     log("STEP", f"Output: {output}")
