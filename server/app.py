@@ -4,6 +4,10 @@ from server.smart_energy_final_environment import SmartEnergyFinalEnvironment
 app = FastAPI()
 env = SmartEnergyFinalEnvironment()
 
+@app.get("/")
+def home():
+    return {"status": "Smart Energy Optimization Running "}
+
 
 @app.get("/reset")
 def reset():
