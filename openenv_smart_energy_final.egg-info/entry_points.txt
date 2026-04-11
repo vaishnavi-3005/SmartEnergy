@@ -1,0 +1,2 @@
+[console_scripts]
+server = smart_energy_final.server.app:main
