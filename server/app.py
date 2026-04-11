@@ -1,8 +1,8 @@
 from fastapi import FastAPI
-from server.environment import SmartEnergyEnv
+from server.smart_energy_final_environment import SmartEnergyFinalEnvironment
 
 app = FastAPI()
-env = SmartEnergyEnv()
+env = SmartEnergyFinalEnvironment()
 
 
 @app.get("/reset")
