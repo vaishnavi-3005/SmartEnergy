@@ -1,6 +1,6 @@
 import random
 
-class SmartEnv:
+class SmartEnergyFinalEnvironment:
 
     def __init__(self):
         self.reset()

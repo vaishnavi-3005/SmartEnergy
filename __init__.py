@@ -8,6 +8,7 @@
 
 from .client import SmartEnergyFinalEnv
 from .models import SmartEnergyFinalAction, SmartEnergyFinalObservation
+from .smart_energy_final_environment import SmartEnergyEnv
 
 __all__ = [
     "SmartEnergyFinalAction",
