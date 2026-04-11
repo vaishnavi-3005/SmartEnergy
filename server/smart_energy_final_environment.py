@@ -1,53 +1,29 @@
 import random
 
-class SmartEnergyFinalEnvironment:
-
+class SmartEnergyEnv:
     def __init__(self):
-        self.reset()
+        self.state_data = {"step": 0, "energy": 100}
 
     def reset(self):
-        self.state = {
-            "temperature": random.randint(24, 35),
-            "occupancy": random.randint(0, 5),
-            "ac": random.randint(0, 1),
-            "fan": random.randint(0, 1),
-            "lights": random.randint(0, 1)
-        }
-        self.steps = 0
-        return self.state
+        self.state_data = {"step": 0, "energy": 100}
+        return {"status": "reset", "state": self.state_data}
 
     def step(self, action):
+        self.state_data["step"] += 1
 
-        # Apply action
-        if action == "turn_on_ac":
-            self.state["ac"] = 1
-        elif action == "turn_off_ac":
-            self.state["ac"] = 0
-        elif action == "turn_on_fan":
-            self.state["fan"] = 1
-        elif action == "turn_off_fan":
-            self.state["fan"] = 0
-        elif action == "turn_on_lights":
-            self.state["lights"] = 1
-        elif action == "turn_off_lights":
-            self.state["lights"] = 0
+        msg = action.get("message", "")
 
-        # Reward logic
-        power = (
-            6 * self.state["ac"] +
-            2 * self.state["lights"] +
-            self.state["fan"]
-        )
+        # simple optimization simulation
+        energy_used = len(msg) * random.uniform(0.5, 1.2)
+        self.state_data["energy"] -= energy_used
 
-        reward = 10 - power
+        reward = max(0, 1 - (energy_used / 100))
 
-        if self.state["occupancy"] == 0 and power > 0:
-            reward -= 5
+        return {
+            "step": self.state_data["step"],
+            "energy": self.state_data["energy"],
+            "reward": reward
+        }
 
-        if self.state["occupancy"] == 0 and power == 0:
-            reward += 5
-
-        self.steps += 1
-        done = self.steps >= 10
-
-        return self.state, reward, done, {}
+    def state(self):
+        return self.state_data
