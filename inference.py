@@ -40,34 +40,33 @@ def run_task(task_name, prompt):
     }
 
     try:
-       response = requests.post(API_URL, headers=headers, json=payload)
-data = response.json()
+        response = requests.post(API_URL, headers=headers, json=payload)
+        data = response.json()
 
-# -------------------------
-# SAFE OUTPUT EXTRACTION
-# -------------------------
-if "choices" in data:
-    output = data["choices"][0]["message"]["content"]
+        # SAFE OUTPUT EXTRACTION
+        if "choices" in data:
+            output = data["choices"][0]["message"]["content"]
 
-elif "generated_text" in data:
-    output = data["generated_text"]
+        elif "generated_text" in data:
+            output = data["generated_text"]
 
-elif "error" in data:
-    output = f"API_ERROR: {data['error']}"
+        elif "error" in data:
+            output = f"API_ERROR: {data['error']}"
 
-else:
-    output = f"UNKNOWN_RESPONSE: {data}"
+        else:
+            output = f"UNKNOWN_RESPONSE: {data}"
+
+    except Exception as e:
+        output = f"ERROR: {str(e)}"
 
     log("STEP", f"Prompt: {prompt}")
     log("STEP", f"Output: {output}")
 
-    # simple scoring (you can improve later)
     score = min(1.0, len(output) / 200)
 
     log("END", f"Score: {score}")
 
     return score
-
 # -------------------------
 # MAIN
 # -------------------------
