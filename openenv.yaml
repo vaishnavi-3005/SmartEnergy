@@ -1,7 +1,12 @@
-spec_version: 1
 name: smart_energy_final
-type: space
-runtime: fastapi
-app: server.app:app
-port: 8000
+version: 1.0
+
+environment:
+  type: docker
+  entrypoint: server.app:app
+
+tasks:
+  - name: reduce_energy
+  - name: optimize_power
+  - name: efficiency_mode
 
