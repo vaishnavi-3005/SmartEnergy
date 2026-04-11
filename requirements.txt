@@ -1,5 +1,0 @@
-numpy
-gradio
-pandas
-fastapi
-uvicorn
