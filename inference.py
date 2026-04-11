@@ -1,33 +1,57 @@
 import os
 import time
-from openai import OpenAI
+import requests
 
-API_BASE_URL = os.getenv("API_BASE_URL")
-MODEL_NAME = os.getenv("MODEL_NAME")
+# =========================
+# ENV VARIABLES
+# =========================
 HF_TOKEN = os.getenv("HF_TOKEN")
+MODEL_NAME = os.getenv("MODEL_NAME", "mistralai/Mistral-7B-Instruct")
 
-client = OpenAI(
-    base_url=API_BASE_URL,
-    api_key=HF_TOKEN
-)
+API_URL = f"https://api-inference.huggingface.co/models/{MODEL_NAME}"
 
+headers = {
+    "Authorization": f"Bearer {HF_TOKEN}"
+}
 
+# =========================
+# LOGGING
+# =========================
 def log(tag, msg):
     print(f"[{tag}] {msg}")
 
+# =========================
+# HF CALL FUNCTION
+# =========================
+def query_hf(prompt):
+    response = requests.post(
+        API_URL,
+        headers=headers,
+        json={"inputs": prompt}
+    )
 
+    result = response.json()
+
+    # Handle HF response formats safely
+    if isinstance(result, list):
+        return result[0].get("generated_text", "")
+    elif isinstance(result, dict):
+        return result.get("generated_text", str(result))
+    else:
+        return str(result)
+
+# =========================
+# TASK RUNNER
+# =========================
 def run_task(task_name, prompt):
     log("START", f"Task: {task_name}")
 
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            {"role": "system", "content": "You are an energy optimization agent."},
-            {"role": "user", "content": prompt}
-        ]
-    )
-
-    output = response.choices[0].message.content
+    try:
+        output = query_hf(
+            f"You are an energy optimization agent.\n\nTask: {prompt}"
+        )
+    except Exception as e:
+        output = f"ERROR: {str(e)}"
 
     log("STEP", f"Prompt: {prompt}")
     log("STEP", f"Output: {output}")
@@ -38,7 +62,9 @@ def run_task(task_name, prompt):
 
     return score
 
-
+# =========================
+# MAIN
+# =========================
 if __name__ == "__main__":
 
     tasks = [
@@ -52,6 +78,6 @@ if __name__ == "__main__":
     for name, prompt in tasks:
         score = run_task(name, prompt)
         results.append(score)
-        time.sleep(1)
+        time.sleep(2)
 
-    print("FINAL SCORE:", sum(results) / len(results))
+    print("\nFINAL SCORE:", sum(results) / len(results))
