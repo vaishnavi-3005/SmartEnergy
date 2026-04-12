@@ -1,0 +1,16 @@
+[project]
+name = "smart-energy"
+version = "0.1.0"
+description = "Smart Energy Optimization Environment"
+authors = [
+    { name = "Vaishnavi", email = "vaishnavirs8135@example.com" }
+]
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic"
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
