@@ -1,25 +1,45 @@
 from fastapi import FastAPI
-from server.smart_energy_final_environment import SmartEnergyFinalEnvironment
+from pydantic import BaseModel
+import random
 
 app = FastAPI()
-env = SmartEnergyFinalEnvironment()
 
+state = {
+    "step": 0,
+    "energy": 50
+}
 
-@app.get("/")
-def home():
-    return {"status": "Smart Energy Optimization Running 🚀"}
+class Action(BaseModel):
+    action: int
 
-
-@app.get("/reset")
+@app.post("/reset")
 def reset():
-    return env.reset()
+    global state
+    state = {"step": 0, "energy": 50}
 
+    return {
+        "observation": [state["energy"], state["step"]],
+        "reward": 0,
+        "done": False
+    }
 
 @app.post("/step")
-def step(data: dict):
-    return env.step(data)
+def step(action: Action):
+    global state
 
+    state["step"] += 1
 
-@app.get("/state")
-def state():
-    return env.state
+    if action.action == 1:
+        state["energy"] += random.randint(-5, 5)
+        reward = 1
+    else:
+        state["energy"] -= random.randint(0, 3)
+        reward = 0
+
+    done = state["step"] >= 10
+
+    return {
+        "observation": [state["energy"], state["step"]],
+        "reward": reward,
+        "done": done
+    }
