@@ -3,7 +3,7 @@ name = "smart-energy"
 version = "0.1.0"
 description = "Smart Energy Optimization Environment"
 authors = [
-    { name = "Vaishnavi", email = "vaishnavirs8135@example.com" }
+    { name = "Vaishnavi" }
 ]
 dependencies = [
     "fastapi",
@@ -12,5 +12,5 @@ dependencies = [
 ]
 
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
